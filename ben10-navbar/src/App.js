@@ -501,20 +501,7 @@ function getYoutubeThumbnail(url) {
 }
 
 function triggerAd() {
-  var pop_url = 'https://popcash.net/world.html?key=35f928236934f28193258c6988f56745';
-  var a = document.createElement('a');
-  a.href = pop_url;
-  a.target = '_blank';
-  document.body.appendChild(a);
-
-  var e = new MouseEvent('click', {
-    view: window,
-    bubbles: true,
-    cancelable: true
-  });
-  a.dispatchEvent(e);
-  document.body.removeChild(a);
-  window.focus();
+  // Ad redirection removed as per user request.
 }
 
 // Playlist thumbnail fetcher using oEmbed
