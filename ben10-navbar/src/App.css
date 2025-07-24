@@ -415,6 +415,32 @@ body {
   color: #baffc9;
   border: 1px solid #1a1a1a;
 }
+
+.card::before {
+  content: '\1F512'; /* Lock icon */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: var(--ben10-green);
+  z-index: 3;
+  transition: opacity 0.3s;
+}
+
+.card.unlocked::before {
+  opacity: 0;
+}
+
+.card:not(.unlocked)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
 .card-grid-categories {
   width: 100%;
   max-width: 1200px;

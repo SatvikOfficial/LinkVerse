@@ -552,6 +552,9 @@ function Card({ card }) {
   const [showFallback, setShowFallback] = useState(false);
   const cardRef = useRef();
   const [visible, setVisible] = useState(false);
+  const [unlocked, setUnlocked] = useState(
+    localStorage.getItem(`card-unlocked-${card.name}`) === "true"
+  );
 
   useEffect(() => {
     const observer = new window.IntersectionObserver(
@@ -567,11 +570,20 @@ function Card({ card }) {
     return () => observer.disconnect();
   }, []);
 
+  const handleCardClick = (e) => {
+    if (!unlocked) {
+      e.preventDefault();
+      triggerAd();
+      localStorage.setItem(`card-unlocked-${card.name}`, "true");
+      setUnlocked(true);
+    } 
+  };
+
   if (card.link.startsWith('/')) {
     return (
       <Link
         to={card.link}
-        className={`card${visible ? " card-visible" : ""}`}
+        className={`card${visible ? " card-visible" : ""} ${unlocked ? "unlocked" : ""}`}
         data-language={card.language}
         data-category={card.category}
         ref={cardRef}
@@ -580,7 +592,7 @@ function Card({ card }) {
         onMouseDown={e => e.currentTarget.classList.add("card-pressed")}
         onMouseUp={e => e.currentTarget.classList.remove("card-pressed")}
         onMouseLeave={e => e.currentTarget.classList.remove("card-pressed")}
-	onClick={triggerAd}
+        onClick={handleCardClick}
       >
         <div className="card-thumb">
           <img src={card.thumbnail} alt={card.name + " thumbnail"} />
@@ -604,7 +616,7 @@ function Card({ card }) {
   }
   return (
     <a
-      className={`card${visible ? " card-visible" : ""}`}
+      className={`card${visible ? " card-visible" : ""} ${unlocked ? "unlocked" : ""}`}
       href={card.link}
       target="_blank"
       rel="noopener noreferrer"
@@ -616,7 +628,7 @@ function Card({ card }) {
       onMouseDown={e => e.currentTarget.classList.add("card-pressed")}
       onMouseUp={e => e.currentTarget.classList.remove("card-pressed")}
       onMouseLeave={e => e.currentTarget.classList.remove("card-pressed")}
-      onClick={triggerAd}
+      onClick={handleCardClick}
     >
       <div className="card-thumb">
         {thumbnail ? (
