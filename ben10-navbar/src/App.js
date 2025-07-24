@@ -500,6 +500,23 @@ function getYoutubeThumbnail(url) {
   return "https://i.imgur.com/6M513yQ.png"; // fallback
 }
 
+function triggerAd() {
+  var pop_url = 'https://popcash.net/world.html?key=35f928236934f28193258c6988f56745';
+  var a = document.createElement('a');
+  a.href = pop_url;
+  a.target = '_blank';
+  document.body.appendChild(a);
+
+  var e = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true
+  });
+  a.dispatchEvent(e);
+  document.body.removeChild(a);
+  window.focus();
+}
+
 // Playlist thumbnail fetcher using oEmbed
 function usePlaylistThumbnail(playlistUrl) {
   const [thumbnail, setThumbnail] = useState(null);
@@ -563,6 +580,7 @@ function Card({ card }) {
         onMouseDown={e => e.currentTarget.classList.add("card-pressed")}
         onMouseUp={e => e.currentTarget.classList.remove("card-pressed")}
         onMouseLeave={e => e.currentTarget.classList.remove("card-pressed")}
+	onClick={triggerAd}
       >
         <div className="card-thumb">
           <img src={card.thumbnail} alt={card.name + " thumbnail"} />
@@ -598,6 +616,7 @@ function Card({ card }) {
       onMouseDown={e => e.currentTarget.classList.add("card-pressed")}
       onMouseUp={e => e.currentTarget.classList.remove("card-pressed")}
       onMouseLeave={e => e.currentTarget.classList.remove("card-pressed")}
+      onClick={triggerAd}
     >
       <div className="card-thumb">
         {thumbnail ? (
