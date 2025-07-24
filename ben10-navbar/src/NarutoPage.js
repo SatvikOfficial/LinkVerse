@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const narutoEpisodes = [
@@ -152,9 +152,21 @@ const narutoEpisodes = [
 ];
 
 function Card({ card }) {
+  const [unlocked, setUnlocked] = useState(
+    localStorage.getItem(`card-unlocked-${card.name}`) === "true"
+  );
+
+  const handleCardClick = (e) => {
+    if (!unlocked) {
+      e.preventDefault();
+      localStorage.setItem(`card-unlocked-${card.name}`, "true");
+      setUnlocked(true);
+    }
+  };
+
   return (
     <a
-      className='card card-visible'
+      className={`card card-visible ${unlocked ? "unlocked" : ""}`}
       href={card.link}
       target="_blank"
       rel="noopener noreferrer"
@@ -165,6 +177,7 @@ function Card({ card }) {
       onMouseDown={e => e.currentTarget.classList.add("card-pressed")}
       onMouseUp={e => e.currentTarget.classList.remove("card-pressed")}
       onMouseLeave={e => e.currentTarget.classList.remove("card-pressed")}
+      onClick={handleCardClick}
     >
       <div className="card-thumb">
         <img src={"https://i.ytimg.com/vi/E-E0Ipj69OE/hqdefault.jpg"} alt={card.name + " thumbnail"} />
@@ -183,7 +196,7 @@ function Card({ card }) {
 function NarutoPage() {
   return (
     <div className="card-grid-categories">
-      <div className="card-category-block">
+      <div className="card-category-.block">
         <h2 className="card-category-title">Naruto Hindi Dub</h2>
         <div className="card-grid">
           {narutoEpisodes.map((card, idx) => (
@@ -196,3 +209,4 @@ function NarutoPage() {
 }
 
 export default NarutoPage;
+
