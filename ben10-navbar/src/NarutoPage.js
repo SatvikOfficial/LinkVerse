@@ -198,11 +198,11 @@ function Card({ card }) {
         </div>
       </div>
       {showAd && (
-        <div className="ad-container">
+        <div className="ad-container" dangerouslySetInnerHTML={{ __html: `
           <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
-          <ins className="eas6a97888e2" data-zoneid="5684516"></ins>
+          <ins class="eas6a97888e2" data-zoneid="5684516"></ins>
           <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-        </div>
+        `}}></div>
       )}
     </a>
   );
