@@ -151,20 +151,46 @@ const narutoEpisodes = [
   },
 ];
 
-function Card({ card }) {
-  const [unlocked, setUnlocked] = useState(false);
+const ConfirmationDialog = ({ show, onConfirm, onCancel }) => {
+  if (!show) {
+    return null;
+  }
 
-  
+  return (
+    <div className="confirmation-dialog-overlay">
+      <div className="confirmation-dialog-content">
+        <p>Do you want to watch this ad to unlock this link?</p>
+        <div className="confirmation-dialog-buttons">
+          <button onClick={onConfirm}>Yes</button>
+          <button onClick={onCancel}>No</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function Card({ card }) {
+  const [unlocked, setUnlocked] = useState(
+    sessionStorage.getItem(`card-unlocked-${card.name}`) === "true"
+  );
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleCardClick = (e) => {
     if (!unlocked) {
       e.preventDefault();
-      // Simulate ad display time, then unlock
-      setTimeout(() => {
-        setUnlocked(true);
-        window.open(card.link, "_blank"); // Open link after ad
-      }, 3000); // Adjust delay as needed for ad to load
+      setShowConfirmation(true);
     }
+  };
+
+  const handleConfirm = () => {
+    setShowConfirmation(false);
+    window.open("https://www.profitableratecpm.com/cep97pk4?key=c6d02e5e2428027039f5b8839ead4161", "_blank");
+    sessionStorage.setItem(`card-unlocked-${card.name}`, "true");
+    setUnlocked(true);
+  };
+
+  const handleCancel = () => {
+    setShowConfirmation(false);
   };
 
   return (
@@ -192,19 +218,25 @@ function Card({ card }) {
           <span className="card-tag cat">{card.category}</span>
         </div>
       </div>
-      
+      <ConfirmationDialog
+        show={showConfirmation}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </a>
   );
 }
 
+const MemoizedCard = React.memo(Card);
+
 function NarutoPage() {
   return (
     <div className="card-grid-categories">
-      <div className="card-category-.block">
+      <div className="card-category-block">
         <h2 className="card-category-title">Naruto Hindi Dub</h2>
         <div className="card-grid">
           {narutoEpisodes.map((card, idx) => (
-            <Card card={card} key={card.name + idx} />
+            <MemoizedCard card={card} key={card.name + idx} />
           ))}
         </div>
       </div>

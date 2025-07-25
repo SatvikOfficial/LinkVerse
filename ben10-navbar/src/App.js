@@ -522,27 +522,7 @@ const ConfirmationDialog = ({ show, onConfirm, onCancel }) => {
 
 
 
-// Playlist thumbnail fetcher using oEmbed
-function usePlaylistThumbnail(playlistUrl) {
-  const [thumbnail, setThumbnail] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchThumb() {
-      try {
-        const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(playlistUrl)}&format=json`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("oEmbed failed");
-        const data = await res.json();
-        if (!cancelled) setThumbnail(data.thumbnail_url);
-      } catch {
-        if (!cancelled) setThumbnail("https://i.imgur.com/6M513yQ.png");
-      }
-    }
-    fetchThumb();
-    return () => { cancelled = true; };
-  }, [playlistUrl]);
-  return thumbnail;
-}
+
 
 function Preloader() {
   return (
@@ -552,8 +532,8 @@ function Preloader() {
   );
 }
 
-function Card({ card }) {
-  const playlistThumb = usePlaylistThumbnail(card.link);
+function Card({ card, playlistThumbnails }) {
+  const playlistThumb = playlistThumbnails[card.link];
   const [showFallback, setShowFallback] = useState(false);
   const cardRef = useRef();
   const [visible, setVisible] = useState(false);
@@ -577,7 +557,7 @@ function Card({ card }) {
   }, []);
 
   const handleCardClick = (e) => {
-    if (!unlocked) {
+    if (!unlocked && card.link !== "/naruto") {
       e.preventDefault();
       setShowConfirmation(true);
     }
@@ -684,6 +664,8 @@ function groupByCategory(cards) {
   return grouped;
 }
 
+const MemoizedCard = React.memo(Card);
+
 function CardGrid({ cards, searchActive }) {
   // Per-category load more state
   const [visibleCount, setVisibleCount] = React.useState({});
@@ -717,7 +699,7 @@ function CardGrid({ cards, searchActive }) {
             <h2 className="card-category-title">{cat}</h2>
             <div className="card-grid">
               {visibleCards.map((card, idx) => (
-                <Card card={card} key={card.name + idx} />
+                <MemoizedCard card={card} key={card.name + idx} playlistThumbnails={playlistThumbnails} />
               ))}
             </div>
             {!showAll && allCards.length > count && (
@@ -749,6 +731,22 @@ function MainApp() {
   const [category, setCategory] = useState("All");
   const [heroSearch, setHeroSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [playlistThumbnails, setPlaylistThumbnails] = useState({});
+
+  useEffect(() => {
+    async function fetchAllPlaylistThumbs() {
+      const playlistCards = cardData.filter(card => card.type === 'playlist');
+      const thumbPromises = playlistCards.map(card =>
+        fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(card.link)}&format=json`)
+          .then(res => (res.ok ? res.json() : Promise.reject('oEmbed failed')))
+          .then(data => ({ [card.link]: data.thumbnail_url }))
+          .catch(() => ({ [card.link]: "https://i.imgur.com/6M513yQ.png" }))
+      );
+      const thumbs = await Promise.all(thumbPromises);
+      setPlaylistThumbnails(Object.assign({}, ...thumbs));
+    }
+    fetchAllPlaylistThumbs();
+  }, []);
   
 
   useEffect(() => {
@@ -888,9 +886,6 @@ function MainApp() {
       </section>
       {/* Card Grid Section */}
       <section className="card-section">
-        <div style={{ margin: '0 auto', textAlign: 'center' }}>
-          <iframe src="https://www.profitableratecpm.com/cep97pk4?key=c6d02e5e2428027039f5b8839ead4161" height="60" width="468" frameBorder="0" scrolling="no"></iframe>
-        </div>
         <CardGrid cards={filteredCards} searchActive={!!effectiveSearch} />
       </section>
       
