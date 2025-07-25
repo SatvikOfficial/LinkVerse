@@ -666,7 +666,7 @@ function groupByCategory(cards) {
 
 const MemoizedCard = React.memo(Card);
 
-function CardGrid({ cards, searchActive }) {
+function CardGrid({ cards, searchActive, playlistThumbnails }) {
   // Per-category load more state
   const [visibleCount, setVisibleCount] = React.useState({});
   const DEFAULT_COUNT = 8;
@@ -886,7 +886,7 @@ function MainApp() {
       </section>
       {/* Card Grid Section */}
       <section className="card-section">
-        <CardGrid cards={filteredCards} searchActive={!!effectiveSearch} />
+        <CardGrid cards={filteredCards} searchActive={!!effectiveSearch} playlistThumbnails={playlistThumbnails} />
       </section>
       
     </div>
