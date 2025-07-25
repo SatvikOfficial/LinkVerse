@@ -152,22 +152,17 @@ const narutoEpisodes = [
 ];
 
 function Card({ card }) {
-  const [unlocked, setUnlocked] = useState(
-    localStorage.getItem(`card-unlocked-${card.name}`) === "true"
-  );
+  const [unlocked, setUnlocked] = useState(false);
 
-  const [showAd, setShowAd] = useState(false);
+  
 
   const handleCardClick = (e) => {
     if (!unlocked) {
       e.preventDefault();
-      setShowAd(true);
       // Simulate ad display time, then unlock
       setTimeout(() => {
-        localStorage.setItem(`card-unlocked-${card.name}`, "true");
         setUnlocked(true);
         window.open(card.link, "_blank"); // Open link after ad
-        setShowAd(false); // Hide ad after link opens
       }, 3000); // Adjust delay as needed for ad to load
     }
   };
@@ -197,13 +192,7 @@ function Card({ card }) {
           <span className="card-tag cat">{card.category}</span>
         </div>
       </div>
-      {showAd && (
-        <div className="ad-container" dangerouslySetInnerHTML={{ __html: `
-          <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
-          <ins class="eas6a97888e2" data-zoneid="5684516"></ins>
-          <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-        `}}></div>
-      )}
+      
     </a>
   );
 }

@@ -500,9 +500,27 @@ function getYoutubeThumbnail(url) {
   return "https://i.imgur.com/6M513yQ.png"; // fallback
 }
 
-function triggerAd() {
-  // Ad redirection removed as per user request.
-}
+
+
+const ConfirmationDialog = ({ show, onConfirm, onCancel }) => {
+  if (!show) {
+    return null;
+  }
+
+  return (
+    <div className="confirmation-dialog-overlay">
+      <div className="confirmation-dialog-content">
+        <p>Do you want to watch this ad to unlock this link?</p>
+        <div className="confirmation-dialog-buttons">
+          <button onClick={onConfirm}>Yes</button>
+          <button onClick={onCancel}>No</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 // Playlist thumbnail fetcher using oEmbed
 function usePlaylistThumbnail(playlistUrl) {
@@ -540,8 +558,9 @@ function Card({ card }) {
   const cardRef = useRef();
   const [visible, setVisible] = useState(false);
   const [unlocked, setUnlocked] = useState(
-    localStorage.getItem(`card-unlocked-${card.name}`) === "true"
+    sessionStorage.getItem(`card-unlocked-${card.name}`) === "true"
   );
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     const observer = new window.IntersectionObserver(
@@ -560,10 +579,19 @@ function Card({ card }) {
   const handleCardClick = (e) => {
     if (!unlocked) {
       e.preventDefault();
-      triggerAd();
-      localStorage.setItem(`card-unlocked-${card.name}`, "true");
-      setUnlocked(true);
-    } 
+      setShowConfirmation(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowConfirmation(false);
+    window.open("https://www.profitableratecpm.com/cep97pk4?key=c6d02e5e2428027039f5b8839ead4161", "_blank");
+    sessionStorage.setItem(`card-unlocked-${card.name}`, "true");
+    setUnlocked(true);
+  };
+
+  const handleCancel = () => {
+    setShowConfirmation(false);
   };
 
   if (card.link.startsWith('/')) {
@@ -637,6 +665,11 @@ function Card({ card }) {
           <span className="card-tag cat">{card.category}</span>
         </div>
       </div>
+      <ConfirmationDialog
+        show={showConfirmation}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </a>
   );
 }
@@ -716,6 +749,7 @@ function MainApp() {
   const [category, setCategory] = useState("All");
   const [heroSearch, setHeroSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     // Simulate loading for preloader
@@ -780,6 +814,8 @@ function MainApp() {
   function handleSearchSubmit(e) {
     e.preventDefault();
   }
+
+  
 
   if (loading) return <Preloader />;
 
@@ -852,8 +888,12 @@ function MainApp() {
       </section>
       {/* Card Grid Section */}
       <section className="card-section">
+        <div style={{ margin: '0 auto', textAlign: 'center' }}>
+          <iframe src="https://www.profitableratecpm.com/cep97pk4?key=c6d02e5e2428027039f5b8839ead4161" height="60" width="468" frameBorder="0" scrolling="no"></iframe>
+        </div>
         <CardGrid cards={filteredCards} searchActive={!!effectiveSearch} />
       </section>
+      
     </div>
   );
 }
